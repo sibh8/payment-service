@@ -1,2 +1,13 @@
-spring.application.name=payment-service
+spring:
+  application:
+    name: "payment-service"
 
+app:
+  payment:
+    gatewaytype: "stripe"
+    razorpayconfig:
+      razorpayid: ${RAZORPAY_ID}
+      razorpaysecret: ${RAZORPAY_SECRET}
+    stripeconfig:
+      stripeid: ${STRIPE_ID}
+      stripesecret: ${STRIPE_SECRET}

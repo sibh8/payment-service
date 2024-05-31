@@ -1,6 +1,8 @@
 package org.example.paymentservice.controller;
 
 import com.razorpay.RazorpayException;
+import com.stripe.exception.StripeException;
+import org.example.paymentservice.configuration.PaymentConfiguration;
 import org.example.paymentservice.dto.PaymentsRequestDto;
 import org.example.paymentservice.service.IPaymentService;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -9,19 +11,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class RazorpayPaymentController {
+public class PaymentController {
 
     private IPaymentService razorPay;
     private IPaymentService stripePay;
+    private PaymentConfiguration paymentConfiguration;
 
-    public RazorpayPaymentController(@Qualifier("razorpay") IPaymentService razorPay,
-                                     @Qualifier("stripe") IPaymentService stripePay) {
+    public PaymentController(@Qualifier("razorpay") IPaymentService razorPay,
+                             @Qualifier("stripe") IPaymentService stripePay,
+                             PaymentConfiguration paymentConfiguration) {
         this.razorPay = razorPay;
         this.stripePay = stripePay;
+        this.paymentConfiguration = paymentConfiguration;
     }
 
     @PostMapping("/payments")
-    public String initiatePayment(@RequestBody PaymentsRequestDto paymentsRequestDto) throws RazorpayException {
+    public String initiatePayment(@RequestBody PaymentsRequestDto paymentsRequestDto) throws RazorpayException, StripeException {
 
         String response = null;
 
@@ -43,8 +48,10 @@ public class RazorpayPaymentController {
     }
 
     private int getPaymentGatewayType() {
-        return 1;
-    }
 
-    ;
+        if (paymentConfiguration.getGatewayType().equals("razorpay"))
+            return 1;
+        else
+            return 2;
+    }
 }
